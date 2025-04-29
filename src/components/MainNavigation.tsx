@@ -7,7 +7,9 @@ import {
   Star, 
   Calendar, 
   Award, 
-  Flag
+  Flag,
+  Users,
+  UserRound
 } from 'lucide-react';
 
 const MainNavigation = () => {
@@ -17,8 +19,8 @@ const MainNavigation = () => {
     { name: 'Dashboard', path: '/', icon: Calendar },
     { name: 'Leaderboard', path: '/leaderboard', icon: Trophy },
     { name: 'My Achievements', path: '/achievements', icon: Award },
-    { name: 'Community', path: '/community', icon: Flag },
-    { name: 'Profile', path: '/profile', icon: Star },
+    { name: 'Community', path: '/community', icon: Users },
+    { name: 'Profile', path: '/profile', icon: UserRound },
   ];
   
   return (
