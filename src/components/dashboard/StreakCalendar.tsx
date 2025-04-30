@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -18,6 +17,12 @@ import {
   startOfWeek,
   endOfWeek
 } from "date-fns";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Mock data generator that creates data for a given date range
 const generateMockDataForDateRange = (startDate: Date, endDate: Date) => {
@@ -198,20 +203,29 @@ const StreakCalendar = () => {
                           // If this day exists and is within the current month
                           if (day && day.getMonth() === month.date.getMonth()) {
                             const activityLevel = getActivityLevel(day);
+                            const postText = activityLevel === 0 ? 'No posts' : 
+                                             activityLevel === 1 ? '1 post' : 
+                                             `${activityLevel} posts`;
+                                             
                             return (
-                              <div 
-                                key={`day-${month.name}-${dayIndex}-${weekIndex}`}
-                                className={cn(
-                                  "h-4 w-4 rounded-sm mx-0.5",
-                                  activityLevel === 0 && "bg-secondary/40",
-                                  activityLevel === 1 && "bg-brand-orange/60",
-                                  activityLevel === 2 && "bg-brand-orange/80",
-                                  activityLevel === 3 && "bg-brand-orange"
-                                )}
-                                title={`${format(day, 'MMM d')}: ${activityLevel > 0 ? 
-                                  `${activityLevel} post${activityLevel > 1 ? 's' : ''}` : 
-                                  'No posts'}`}
-                              />
+                              <TooltipProvider key={`day-${month.name}-${dayIndex}-${weekIndex}`}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div 
+                                      className={cn(
+                                        "h-4 w-4 rounded-sm mx-0.5",
+                                        activityLevel === 0 && "bg-secondary/40",
+                                        activityLevel === 1 && "bg-brand-orange/60",
+                                        activityLevel === 2 && "bg-brand-orange/80",
+                                        activityLevel === 3 && "bg-brand-orange"
+                                      )}
+                                    />
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>{format(day, 'MMM d')}: {postText}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             );
                           }
                           // Empty cell
