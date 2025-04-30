@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -13,7 +14,9 @@ import {
   subMonths, 
   isWithinInterval,
   parse,
-  getWeeksInMonth
+  getWeeksInMonth,
+  startOfWeek,
+  endOfWeek
 } from "date-fns";
 
 // Mock data generator that creates data for a given date range
@@ -125,7 +128,7 @@ const StreakCalendar = () => {
     };
   });
 
-  // Day of week headers
+  // Day of week headers - these will be displayed once for all months
   const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   // Render the calendar grid
@@ -149,30 +152,33 @@ const StreakCalendar = () => {
               // Get all days in this month
               const monthStart = startOfMonth(month.date);
               const monthEnd = endOfMonth(month.date);
-              const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
               
-              // Calculate how many "blank" days to add before the first day
-              // getDay returns 0 for Sunday, but we want Monday as 0
-              const firstDayOfWeek = getDay(monthStart) === 0 ? 6 : getDay(monthStart) - 1;
-                
-              // Create a 7×6 grid for the month (max 6 rows needed for any month)
-              const calendarDays = Array(42).fill(null);
-                
+              // Get the start of the week containing the first day of the month
+              const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 }); // Week starts on Monday (1)
+              
+              // Create a 7×7 grid (7 days × 7 weeks) - this is more than enough for any month
+              // We'll only show the days that belong to the current month
+              const days = [];
+              for (let i = 0; i < 7; i++) { // 7 rows, one for each day of the week
+                days.push(Array(7).fill(null)); // 7 columns, one for each week
+              }
+              
               // Fill the grid with actual days
-              daysInMonth.forEach((day, index) => {
-                calendarDays[firstDayOfWeek + index] = day;
-              });
-                
-              // Split into weeks
-              const weeks = Array(6).fill(null).map((_, weekIndex) => 
-                calendarDays.slice(weekIndex * 7, (weekIndex + 1) * 7)
-              );
-                
-              // Only keep weeks that have at least one day in this month
-              const validWeeks = weeks.filter(week => 
-                week.some(day => day && isWithinInterval(day, { start: monthStart, end: monthEnd }))
-              );
-                
+              let currentDay = calendarStart;
+              for (let week = 0; week < 7; week++) {
+                for (let day = 0; day < 7; day++) {
+                  // Place each day in the correct position in the grid
+                  // We're using a week-based view where each row represents a specific day of the week
+                  // and each column represents a specific week
+                  const dayOfWeek = (getDay(currentDay) + 6) % 7; // Convert Sunday=0 to Monday=0
+                  days[dayOfWeek][week] = currentDay;
+                  
+                  // Move to the next day
+                  currentDay = new Date(currentDay);
+                  currentDay.setDate(currentDay.getDate() + 1);
+                }
+              }
+              
               return (
                 <div key={month.name} className="mr-2 min-w-[calc(16.666%-0.5rem)]">
                   {/* Month name */}
@@ -182,15 +188,19 @@ const StreakCalendar = () => {
                   
                   {/* Days grid */}
                   <div>
-                    {validWeeks.map((week, weekIndex) => (
-                      <div key={`week-${month.name}-${weekIndex}`} className="flex h-6 items-center">
-                        {week.map((day, dayIndex) => {
-                          // If this day is part of the month
-                          if (day && isWithinInterval(day, { start: monthStart, end: monthEnd })) {
+                    {/* Render each row (day of week) */}
+                    {weekdays.map((_, dayIndex) => (
+                      <div key={`row-${month.name}-${dayIndex}`} className="flex h-6 items-center">
+                        {/* Render each column (week) */}
+                        {Array(7).fill(0).map((_, weekIndex) => {
+                          const day = days[dayIndex][weekIndex];
+                          
+                          // If this day exists and is within the current month
+                          if (day && day.getMonth() === month.date.getMonth()) {
                             const activityLevel = getActivityLevel(day);
                             return (
                               <div 
-                                key={`day-${month.name}-${weekIndex}-${dayIndex}`}
+                                key={`day-${month.name}-${dayIndex}-${weekIndex}`}
                                 className={cn(
                                   "h-4 w-4 rounded-sm mx-0.5",
                                   activityLevel === 0 && "bg-secondary/40",
@@ -204,8 +214,8 @@ const StreakCalendar = () => {
                               />
                             );
                           }
-                          // Empty cell for days that aren't in this month
-                          return <div key={`empty-${month.name}-${weekIndex}-${dayIndex}`} className="h-4 w-4 mx-0.5" />;
+                          // Empty cell
+                          return <div key={`empty-${month.name}-${dayIndex}-${weekIndex}`} className="h-4 w-4 mx-0.5" />;
                         })}
                       </div>
                     ))}
