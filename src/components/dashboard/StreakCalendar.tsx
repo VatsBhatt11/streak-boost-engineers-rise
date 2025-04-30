@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -12,11 +11,9 @@ import {
   getDay, 
   addMonths, 
   subMonths, 
-  startOfWeek,
-  endOfWeek,
-  isSameMonth,
+  isWithinInterval,
   parse,
-  isSameDay
+  getWeeksInMonth
 } from "date-fns";
 
 // Mock data generator that creates data for a given date range
@@ -58,24 +55,6 @@ const StreakCalendar = () => {
   useEffect(() => {
     setStreakData(generateMockDataForDateRange(startDate, endDate));
   }, [currentDate]);
-  
-  // Get days of week for labels
-  const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  
-  // Get all months in the current range
-  const getMonthsInRange = () => {
-    const months = [];
-    let current = startDate;
-    
-    while (current <= endDate) {
-      months.push(format(current, 'MMM'));
-      current = addMonths(current, 1);
-    }
-    
-    return months;
-  };
-  
-  const months = getMonthsInRange();
   
   // Navigation handlers
   const goToPreviousMonth = () => {
@@ -136,86 +115,109 @@ const StreakCalendar = () => {
   
   const currentStreak = getCurrentStreak();
   const longestStreak = getLongestStreak();
-  
-  // Create the calendar grid layout for the 6-month view
-  const renderCalendarGrid = () => {
-    // Create a grid with days of the week as rows and dates as columns
+
+  // Generate array of months for the 6-month view
+  const months = Array.from({ length: 6 }, (_, i) => {
+    const month = addMonths(startDate, i);
+    return {
+      date: month,
+      name: format(month, 'MMM')
+    };
+  });
+
+  // Day of week headers
+  const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  // Render the calendar grid
+  const renderCalendar = () => {
     return (
-      <div className="flex flex-col">
-        {/* Month headers */}
-        <div className="flex mb-1">
-          <div className="w-10" /> {/* Empty cell for day of week labels */}
-          {months.map(month => (
-            <div 
-              key={month} 
-              className="flex-1 text-sm text-center text-muted-foreground"
-            >
-              {month}
-            </div>
-          ))}
-        </div>
-        
-        {/* Days of the week and contribution cells */}
-        {weekDays.map((day, dayIndex) => (
-          <div key={day} className="flex items-center mb-1">
-            <div className="w-10 text-xs text-right pr-2 text-muted-foreground">
-              {day}
-            </div>
-            
-            {/* Generate cells for each week day across all months */}
-            <div className="flex-1 grid grid-cols-6 gap-1">
-              {Array.from({ length: 6 }).map((_, monthIndex) => {
-                const monthDate = addMonths(startDate, monthIndex);
-                const monthStartDate = startOfMonth(monthDate);
-                const monthEndDate = endOfMonth(monthDate);
-                
-                // Find the day in this month that corresponds to our current weekday
-                // If we're looking at Monday (dayIndex 0), we want to find all Mondays in this month
-                const daysOfWeek = [];
-                let currentDay = startOfMonth(monthDate);
-                
-                // Adjust to find the first occurrence of our weekday
-                while (getDay(currentDay) !== ((dayIndex + 1) % 7)) { // +1 because our weekDays starts with Monday (1) not Sunday (0)
-                  currentDay = new Date(currentDay.setDate(currentDay.getDate() + 1));
-                }
-                
-                // Now collect all occurrences of this weekday in the month
-                while (currentDay <= monthEndDate) {
-                  daysOfWeek.push(currentDay);
-                  // Move to next week
-                  currentDay = new Date(currentDay.setDate(currentDay.getDate() + 7));
-                }
-                
-                // If there are no occurrences of this day in the month (rare edge case)
-                // or if we need a placeholder, return an empty cell
-                if (daysOfWeek.length === 0) {
-                  return <div key={`empty-${monthIndex}`} className="h-4 w-4" />;
-                }
-                
-                // We're interested in the middle occurrence (approximating the center of the month)
-                const representativeDay = daysOfWeek[Math.min(2, daysOfWeek.length - 1)];
-                const activityLevel = getActivityLevel(representativeDay);
-                
-                return (
-                  <div 
-                    key={`day-${monthIndex}-${dayIndex}`}
-                    className={cn(
-                      "h-4 w-4 rounded-sm",
-                      activityLevel === 0 && "bg-secondary/40", // Dark but visible
-                      activityLevel === 1 && "bg-brand-orange/60",
-                      activityLevel === 2 && "bg-brand-orange/80",
-                      activityLevel === 3 && "bg-brand-orange"
-                    )}
-                    title={`${format(representativeDay, 'MMM d')}: ${activityLevel > 0 ? `${activityLevel} post${activityLevel > 1 ? 's' : ''}` : 'No posts'}`}
-                  />
-                );
-              })}
-            </div>
+      <div className="w-full overflow-x-auto">
+        <div className="flex min-w-max">
+          {/* Column labels (days of the week) */}
+          <div className="pr-2">
+            <div className="h-6"></div> {/* Empty space for month labels */}
+            {weekdays.map((day) => (
+              <div key={day} className="h-6 flex items-center justify-end">
+                <span className="text-xs text-muted-foreground">{day}</span>
+              </div>
+            ))}
           </div>
-        ))}
-        
+
+          {/* Calendar grid */}
+          <div className="flex flex-1">
+            {months.map((month) => {
+              // Get all days in this month
+              const monthStart = startOfMonth(month.date);
+              const monthEnd = endOfMonth(month.date);
+              const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
+              
+              // Calculate how many "blank" days to add before the first day
+              // getDay returns 0 for Sunday, but we want Monday as 0
+              const firstDayOfWeek = getDay(monthStart) === 0 ? 6 : getDay(monthStart) - 1;
+                
+              // Create a 7×6 grid for the month (max 6 rows needed for any month)
+              const calendarDays = Array(42).fill(null);
+                
+              // Fill the grid with actual days
+              daysInMonth.forEach((day, index) => {
+                calendarDays[firstDayOfWeek + index] = day;
+              });
+                
+              // Split into weeks
+              const weeks = Array(6).fill(null).map((_, weekIndex) => 
+                calendarDays.slice(weekIndex * 7, (weekIndex + 1) * 7)
+              );
+                
+              // Only keep weeks that have at least one day in this month
+              const validWeeks = weeks.filter(week => 
+                week.some(day => day && isWithinInterval(day, { start: monthStart, end: monthEnd }))
+              );
+                
+              return (
+                <div key={month.name} className="mr-2 min-w-[calc(16.666%-0.5rem)]">
+                  {/* Month name */}
+                  <div className="h-6 flex items-center justify-center">
+                    <span className="text-xs text-muted-foreground">{month.name}</span>
+                  </div>
+                  
+                  {/* Days grid */}
+                  <div>
+                    {validWeeks.map((week, weekIndex) => (
+                      <div key={`week-${month.name}-${weekIndex}`} className="flex h-6 items-center">
+                        {week.map((day, dayIndex) => {
+                          // If this day is part of the month
+                          if (day && isWithinInterval(day, { start: monthStart, end: monthEnd })) {
+                            const activityLevel = getActivityLevel(day);
+                            return (
+                              <div 
+                                key={`day-${month.name}-${weekIndex}-${dayIndex}`}
+                                className={cn(
+                                  "h-4 w-4 rounded-sm mx-0.5",
+                                  activityLevel === 0 && "bg-secondary/40",
+                                  activityLevel === 1 && "bg-brand-orange/60",
+                                  activityLevel === 2 && "bg-brand-orange/80",
+                                  activityLevel === 3 && "bg-brand-orange"
+                                )}
+                                title={`${format(day, 'MMM d')}: ${activityLevel > 0 ? 
+                                  `${activityLevel} post${activityLevel > 1 ? 's' : ''}` : 
+                                  'No posts'}`}
+                              />
+                            );
+                          }
+                          // Empty cell for days that aren't in this month
+                          return <div key={`empty-${month.name}-${weekIndex}-${dayIndex}`} className="h-4 w-4 mx-0.5" />;
+                        })}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Legend */}
-        <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
+        <div className="flex justify-between items-center mt-4 text-xs text-muted-foreground">
           <span>Learn how we count contributions</span>
           <div className="flex items-center gap-1">
             <span>Less</span>
@@ -274,7 +276,7 @@ const StreakCalendar = () => {
           </div>
         </div>
         
-        {renderCalendarGrid()}
+        {renderCalendar()}
       </CardContent>
     </Card>
   );
