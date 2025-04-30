@@ -1,34 +1,47 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { format, eachDayOfInterval, startOfMonth, endOfMonth, getDay, addMonths, subMonths } from "date-fns";
 
-// Mock data for the streak calendar
-const generateMockData = () => {
-  const days = 28; // 4 weeks
-  const result = [];
+// Mock data generator that creates data for a specific month
+const generateMockDataForMonth = (year: number, month: number) => {
+  const firstDay = startOfMonth(new Date(year, month));
+  const lastDay = endOfMonth(new Date(year, month));
   
-  for (let i = 0; i < days; i++) {
-    // Random level between 0-3, with higher probability for consistent streaks
-    let level;
+  const days = eachDayOfInterval({
+    start: firstDay,
+    end: lastDay
+  });
+  
+  return days.map(day => {
     const random = Math.random();
-    
-    if (i > 0 && result[i-1] > 0 && random > 0.2) {
-      // 80% chance to continue a streak
-      level = Math.min(result[i-1] + (random > 0.5 ? 1 : 0), 3);
-    } else {
-      level = random > 0.6 ? Math.floor(random * 4) : 0;
-    }
-    
-    result.push(level);
-  }
-  
-  return result;
+    // Generate random activity level (0-3)
+    // 0 = no posts, 1-3 = increasing number of posts
+    if (random < 0.6) return 0;
+    if (random < 0.8) return 1;
+    if (random < 0.95) return 2;
+    return 3;
+  });
 };
 
 const StreakCalendar = () => {
-  const [streakData] = useState(generateMockData());
-  const weekLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [streakData, setStreakData] = useState<number[]>([]);
+  
+  // Generate data when month changes
+  useEffect(() => {
+    setStreakData(generateMockDataForMonth(
+      currentDate.getFullYear(),
+      currentDate.getMonth()
+    ));
+  }, [currentDate]);
+  
+  // Get days of week for labels (Sunday to Saturday)
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   
   // Calculate current streak
   const getCurrentStreak = () => {
@@ -63,6 +76,64 @@ const StreakCalendar = () => {
   const currentStreak = getCurrentStreak();
   const longestStreak = getLongestStreak();
   
+  // Get all months for the dropdown
+  const months = Array.from({ length: 12 }, (_, i) => {
+    return {
+      value: i.toString(),
+      label: format(new Date(2000, i), 'MMMM')
+    };
+  });
+  
+  // Navigation handlers
+  const goToPreviousMonth = () => {
+    setCurrentDate(prevDate => subMonths(prevDate, 1));
+  };
+  
+  const goToNextMonth = () => {
+    setCurrentDate(prevDate => addMonths(prevDate, 1));
+  };
+  
+  // Create the calendar grid layout
+  const renderCalendarGrid = () => {
+    const firstDayOfMonth = startOfMonth(currentDate);
+    const startWeekday = getDay(firstDayOfMonth); // 0 = Sunday, 6 = Saturday
+    const daysInMonth = streakData.length;
+    
+    // Create placeholder cells for days before the 1st of the month
+    const placeholders = Array(startWeekday).fill(null);
+    
+    return (
+      <div className="grid grid-cols-7 gap-1">
+        {/* Day of week headers */}
+        {weekDays.map(day => (
+          <div key={day} className="text-xs text-center text-muted-foreground py-1">
+            {day}
+          </div>
+        ))}
+        
+        {/* Empty cells before the 1st */}
+        {placeholders.map((_, index) => (
+          <div key={`placeholder-${index}`} className="h-5 w-5" />
+        ))}
+        
+        {/* Actual day cells */}
+        {streakData.map((level, i) => (
+          <div 
+            key={i} 
+            className={cn(
+              "h-5 w-5 rounded-sm",
+              level === 0 && "bg-secondary/40",
+              level === 1 && "bg-brand-orange/60",
+              level === 2 && "bg-brand-orange/80",
+              level === 3 && "bg-brand-orange"
+            )}
+            title={`${format(new Date(currentDate.getFullYear(), currentDate.getMonth(), i + 1), 'MMM d')}: ${level > 0 ? `${level} post${level > 1 ? 's' : ''}` : 'No posts'}`}
+          />
+        ))}
+      </div>
+    );
+  };
+  
   return (
     <Card className="w-full">
       <CardHeader className="pb-2">
@@ -81,26 +152,62 @@ const StreakCalendar = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex text-xs text-muted-foreground mb-2">
-          {weekLabels.map((day) => (
-            <div key={day} className="flex-1 text-center">
-              {day}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={goToPreviousMonth}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <Select
+              value={currentDate.getMonth().toString()}
+              onValueChange={(value) => {
+                const newDate = new Date(currentDate);
+                newDate.setMonth(parseInt(value));
+                setCurrentDate(newDate);
+              }}
+            >
+              <SelectTrigger className="w-[150px]">
+                <SelectValue>
+                  {format(currentDate, 'MMMM yyyy')}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {months.map((month) => (
+                  <SelectItem key={month.value} value={month.value}>
+                    {month.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            <Button
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
+              onClick={goToNextMonth}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
+              <div className="h-3 w-3 bg-secondary/40 rounded-sm"></div>
+              <span className="text-xs text-muted-foreground">No posts</span>
             </div>
-          ))}
+            <div className="flex items-center gap-1">
+              <div className="h-3 w-3 bg-brand-orange rounded-sm"></div>
+              <span className="text-xs text-muted-foreground">Posted</span>
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-7 gap-1">
-          {streakData.map((level, i) => (
-            <div 
-              key={i} 
-              className={cn(
-                "streak-day",
-                `streak-day-${level}`
-              )}
-              data-tooltip-id="day-tooltip"
-              data-tooltip-content={`Day ${i+1}: ${level > 0 ? 'Posted' : 'No post'}`}
-            />
-          ))}
-        </div>
+        
+        {renderCalendarGrid()}
       </CardContent>
     </Card>
   );
