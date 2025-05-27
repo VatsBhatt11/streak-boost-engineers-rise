@@ -26,7 +26,7 @@ const Index = () => {
               100x
             </div>
             <h1 className="text-2xl font-bold">
-              Track<span className="text-brand-orange">100x</span>
+              Track<span className="brand-orange">100x</span>
             </h1>
           </div>
           <h2 className="text-3xl font-bold mb-2">Track Your #0to100xEngineer Challenge</h2>
@@ -51,7 +51,7 @@ const Index = () => {
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">Track your progress in the #0to100xEngineer challenge</p>
         </div>
-        <Button className="bg-brand-orange hover:bg-brand-orange/90">
+        <Button style={{ backgroundColor: '#f97316' }} className="hover:bg-brand-orange/90">
           Post Today
         </Button>
       </div>
@@ -64,7 +64,7 @@ const Index = () => {
           <PostSubmission />
         </div>
         
-        <div className="pt-4">
+        <div style={{ paddingTop: '1rem' }}>
           <LeaderboardTable />
         </div>
       </div>

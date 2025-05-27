@@ -47,7 +47,7 @@ body {
   min-height: 100vh;
 }
 
-/* Screen reader only class */
+/* Utility Classes */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -60,7 +60,72 @@ body {
   border: 0;
 }
 
-/* Base component classes that might be needed */
 .brand-orange {
   color: #f97316;
+}
+
+/* Common spacing utilities */
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.mb-8 { margin-bottom: 2rem; }
+.mt-8 { margin-top: 2rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-6 { gap: 1.5rem; }
+.p-4 { padding: 1rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+
+/* Layout utilities */
+.min-h-screen { min-height: 100vh; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.text-center { text-align: center; }
+.max-w-md { max-width: 28rem; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+
+/* Grid utilities */
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.space-y-6 > * + * { margin-top: 1.5rem; }
+
+/* Text utilities */
+.text-2xl { font-size: 1.5rem; line-height: 2rem; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.font-bold { font-weight: 700; }
+.text-muted-foreground { color: var(--muted-foreground); }
+
+/* Responsive utilities */
+@media (min-width: 640px) {
+  .sm\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .lg\\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+  .xl\\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Background utilities */
+.bg-background { background-color: var(--background); }
+.bg-brand-orange { background-color: #f97316; }
+
+/* Size utilities */
+.h-4 { height: 1rem; }
+.w-4 { width: 1rem; }
+.h-10 { height: 2.5rem; }
+.w-10 { width: 2.5rem; }
+
+/* Border utilities */
+.rounded { border-radius: 0.25rem; }
+
+/* Positioning utilities */
+.relative { position: relative; }
+
+/* Hover utilities */
+.hover\\:bg-brand-orange\\/90:hover { 
+  background-color: rgba(249, 115, 22, 0.9); 
 }

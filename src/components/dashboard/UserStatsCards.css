@@ -49,9 +49,14 @@
   color: var(--primary);
 }
 
+.user-stats-content {
+  flex: 1;
+}
+
 .user-stats-label {
   color: var(--muted-foreground);
   font-size: 0.875rem;
+  margin: 0;
 }
 
 .user-stats-value {
@@ -60,6 +65,7 @@
   display: flex;
   align-items: baseline;
   gap: 0.25rem;
+  margin: 0;
 }
 
 .user-stats-unit {
