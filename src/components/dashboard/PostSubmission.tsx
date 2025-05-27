@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
+import "./PostSubmission.css";
 
 const PostSubmission = () => {
   const [url, setUrl] = useState("");
@@ -69,38 +70,38 @@ const PostSubmission = () => {
   };
 
   return (
-    <Card className="w-full">
+    <Card className="post-submission-card">
       <CardHeader>
         <CardTitle>Submit Today's Post</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="post-url" className="text-sm font-medium">Post URL</label>
+        <form onSubmit={handleSubmit} className="post-submission-form">
+          <div className="post-submission-input-group">
+            <label htmlFor="post-url" className="post-submission-label">Post URL</label>
             <Input
               id="post-url"
               placeholder="https://twitter.com/... or https://linkedin.com/..."
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              className="bg-secondary"
+              className="post-submission-input"
             />
           </div>
           <Button
             type="submit"
-            className="w-full bg-brand-orange hover:bg-brand-orange/90"
+            className="post-submission-button"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Submitting..." : "Submit Post"}
           </Button>
         </form>
       </CardContent>
-      <CardFooter className="flex-col items-start border-t border-border pt-4">
-        <h4 className="text-sm font-medium mb-2">Recent Submissions</h4>
+      <CardFooter className="post-submission-footer">
+        <h4 className="post-submission-recent-title">Recent Submissions</h4>
         {recentSubmissions.length > 0 ? (
-          <ul className="w-full space-y-2">
+          <ul className="post-submission-list">
             {recentSubmissions.map((submission) => (
-              <li key={submission.id} className="flex justify-between items-center text-sm">
-                <div className="flex items-center gap-2 truncate max-w-[70%]">
+              <li key={submission.id} className="post-submission-item">
+                <div className="post-submission-item-content">
                   <Badge variant={submission.platform === "twitter" ? "default" : "secondary"}>
                     {submission.platform === "twitter" ? "Twitter" : "LinkedIn"}
                   </Badge>
@@ -108,17 +109,17 @@ const PostSubmission = () => {
                     href={submission.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
-                    className="truncate hover:text-brand-orange"
+                    className="post-submission-link"
                   >
                     {submission.url}
                   </a>
                 </div>
-                <span className="text-muted-foreground">{submission.date}</span>
+                <span className="post-submission-date">{submission.date}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-muted-foreground text-sm">No recent submissions</p>
+          <p className="post-submission-empty">No recent submissions</p>
         )}
       </CardFooter>
     </Card>
