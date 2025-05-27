@@ -1,79 +1,196 @@
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  :root {
-    --background: 220 33% 12%;
-    --foreground: 0 0% 98%;
-
-    --card: 220 33% 15%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 220 33% 12%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 25 95% 53%;
-    --primary-foreground: 0 0% 98%;
-
-    --secondary: 220 33% 20%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 220 33% 20%;
-    --muted-foreground: 0 0% 70%;
-
-    --accent: 25 95% 53%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 220 33% 25%;
-    --input: 220 33% 20%;
-    --ring: 25 95% 53%;
-
-    --radius: 0.5rem;
-
-    --sidebar-background: 220 33% 10%;
-    --sidebar-foreground: 0 0% 90%;
-    --sidebar-primary: 25 95% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 33% 16%;
-    --sidebar-accent-foreground: 0 0% 95%;
-    --sidebar-border: 220 33% 20%;
-    --sidebar-ring: 25 95% 53%;
-  }
+/* Base Reset and Variables */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground;
-  }
+:root {
+  --background: #1a1f2c;
+  --foreground: #fafafa;
+  --card: #262a36;
+  --card-foreground: #fafafa;
+  --popover: #1a1f2c;
+  --popover-foreground: #fafafa;
+  --primary: #f97316;
+  --primary-foreground: #fafafa;
+  --secondary: #333741;
+  --secondary-foreground: #fafafa;
+  --muted: #333741;
+  --muted-foreground: #b3b3b3;
+  --accent: #f97316;
+  --accent-foreground: #fafafa;
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+  --border: #404552;
+  --input: #333741;
+  --ring: #f97316;
+  --radius: 8px;
+  --sidebar-background: #151922;
+  --sidebar-foreground: #e5e5e5;
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #293041;
+  --sidebar-accent-foreground: #f1f1f1;
+  --sidebar-border: #333741;
+  --sidebar-ring: #f97316;
 }
 
-@layer components {
-  .streak-day {
-    @apply h-4 w-4 rounded-sm transition-all duration-200;
-  }
-  
-  .streak-day-0 {
-    @apply bg-secondary/40;
-  }
-  
-  .streak-day-1 {
-    @apply bg-brand-orange/60;
-  }
-  
-  .streak-day-2 {
-    @apply bg-brand-orange/80;
-  }
-  
-  .streak-day-3 {
-    @apply bg-brand-orange;
-  }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background);
+  color: var(--foreground);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* Utility Classes */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.p-6 { padding: 1.5rem; }
+
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+.px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+
+.py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+
+.pt-0 { padding-top: 0; }
+.pb-4 { padding-bottom: 1rem; }
+
+.m-1 { margin: 0.25rem; }
+.m-2 { margin: 0.5rem; }
+.m-4 { margin: 1rem; }
+
+.mx-auto { margin-left: auto; margin-right: auto; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mt-8 { margin-top: 2rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+.ml-16 { margin-left: 4rem; }
+
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+.h-2 { height: 0.5rem; }
+.h-4 { height: 1rem; }
+.h-10 { height: 2.5rem; }
+.min-h-screen { min-height: 100vh; }
+
+.rounded { border-radius: 0.25rem; }
+.rounded-md { border-radius: 0.375rem; }
+.rounded-lg { border-radius: 0.5rem; }
+
+.border { border: 1px solid var(--border); }
+.border-b { border-bottom: 1px solid var(--border); }
+
+.bg-background { background-color: var(--background); }
+.bg-card { background-color: var(--card); }
+.bg-primary { background-color: var(--primary); }
+.bg-secondary { background-color: var(--secondary); }
+
+.text-foreground { color: var(--foreground); }
+.text-card-foreground { color: var(--card-foreground); }
+.text-primary-foreground { color: var(--primary-foreground); }
+.text-muted-foreground { color: var(--muted-foreground); }
+
+.text-sm { font-size: 0.875rem; }
+.text-2xl { font-size: 1.5rem; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+
+.leading-none { line-height: 1; }
+.tracking-tight { letter-spacing: -0.025em; }
+
+.space-y-1 > * + * { margin-top: 0.25rem; }
+.space-y-1\.5 > * + * { margin-top: 0.375rem; }
+
+.shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.max-w-7xl { max-width: 80rem; }
+
+.flex-1 { flex: 1; }
+
+.transition-colors {
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Responsive Design */
+@media (min-width: 1024px) {
+  .lg\:ml-64 { margin-left: 16rem; }
+}
+
+/* Animations */
+@keyframes pulse-opacity {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-opacity {
+  animation: pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Streak Calendar Specific Styles */
+.streak-day {
+  height: 1rem;
+  width: 1rem;
+  border-radius: 0.125rem;
+  transition: all 0.2s;
+}
+
+.streak-day-0 {
+  background-color: rgba(51, 55, 65, 0.4);
+}
+
+.streak-day-1 {
+  background-color: rgba(249, 115, 22, 0.6);
+}
+
+.streak-day-2 {
+  background-color: rgba(249, 115, 22, 0.8);
+}
+
+.streak-day-3 {
+  background-color: #f97316;
 }

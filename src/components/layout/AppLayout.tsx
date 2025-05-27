@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import MainNavigation from "@/components/MainNavigation";
 import { Progress } from "@/components/ui/progress";
 import { useLocation } from "react-router-dom";
+import "./AppLayout.css";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -15,23 +16,23 @@ const AppLayout = ({ children }: AppLayoutProps) => {
   const progressValue = 65; // This would come from user data in a real app
   
   return (
-    <div className="min-h-screen flex">
+    <div className="app-layout">
       <MainNavigation />
-      <div className="flex-1 ml-16 lg:ml-64 p-6">
-        <main className="max-w-7xl mx-auto">
+      <div className="app-layout-content">
+        <main className="app-layout-main">
           {isHomePage && (
-            <div className="mb-6 pb-4 border-b border-border">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-muted-foreground">Overall Progress</p>
-                <span className="text-sm font-medium">{progressValue}%</span>
+            <div className="app-layout-progress">
+              <div className="app-layout-progress-header">
+                <p className="app-layout-progress-label">Overall Progress</p>
+                <span className="app-layout-progress-value">{progressValue}%</span>
               </div>
-              <Progress value={progressValue} className="h-2" />
-              <p className="text-xs text-muted-foreground mt-2">Complete your first 30-day streak to reach platform mastery</p>
+              <Progress value={progressValue} className="app-layout-progress-bar" />
+              <p className="app-layout-progress-description">Complete your first 30-day streak to reach platform mastery</p>
             </div>
           )}
           {children}
         </main>
-        <footer className="mt-8 text-center text-muted-foreground text-sm py-4">
+        <footer className="app-layout-footer">
           © {new Date().getFullYear()} Track100xEngineers | Powered by 100xEngineers
         </footer>
       </div>
