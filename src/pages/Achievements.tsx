@@ -25,7 +25,7 @@ const Achievements = () => {
       </Breadcrumb>
       
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Leaderboard</h1>
+        <h1 className="text-2xl font-bold">My Achievements</h1>
         <p className="text-muted-foreground">
           Track your milestones and unlock achievements through consistent posting
         </p>
