@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import "./StreakCalendar.css";
 
 // Mock data generator that creates data for a given date range
 const generateMockDataForDateRange = (startDate: Date, endDate: Date) => {
@@ -139,20 +141,20 @@ const StreakCalendar = () => {
   // Render the calendar grid
   const renderCalendar = () => {
     return (
-      <div className="w-full overflow-x-auto">
-        <div className="flex min-w-max">
+      <div className="streak-calendar-container">
+        <div className="streak-calendar-wrapper">
           {/* Column labels (days of the week) */}
-          <div className="pr-2">
-            <div className="h-6"></div> {/* Empty space for month labels */}
+          <div className="streak-calendar-labels">
+            <div className="streak-calendar-spacer"></div>
             {weekdays.map((day) => (
-              <div key={day} className="h-6 flex items-center justify-end">
-                <span className="text-xs text-muted-foreground">{day}</span>
+              <div key={day} className="streak-calendar-weekday">
+                <span>{day}</span>
               </div>
             ))}
           </div>
 
           {/* Calendar grid */}
-          <div className="flex flex-1">
+          <div className="streak-calendar-content">
             {months.map((month) => {
               // Get all days in this month
               const monthStart = startOfMonth(month.date);
@@ -185,17 +187,17 @@ const StreakCalendar = () => {
               }
               
               return (
-                <div key={month.name} className="mr-2 min-w-[calc(16.666%-0.5rem)]">
+                <div key={month.name} className="streak-calendar-month">
                   {/* Month name */}
-                  <div className="h-6 flex items-center justify-center">
-                    <span className="text-xs text-muted-foreground">{month.name}</span>
+                  <div className="streak-calendar-month-header">
+                    <span>{month.name}</span>
                   </div>
                   
                   {/* Days grid */}
                   <div>
                     {/* Render each row (day of week) */}
                     {weekdays.map((_, dayIndex) => (
-                      <div key={`row-${month.name}-${dayIndex}`} className="flex h-6 items-center">
+                      <div key={`row-${month.name}-${dayIndex}`} className="streak-calendar-row">
                         {/* Render each column (week) */}
                         {Array(7).fill(0).map((_, weekIndex) => {
                           const day = days[dayIndex][weekIndex];
@@ -212,13 +214,7 @@ const StreakCalendar = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <div 
-                                      className={cn(
-                                        "h-4 w-4 rounded-sm mx-0.5",
-                                        activityLevel === 0 && "bg-secondary/40",
-                                        activityLevel === 1 && "bg-brand-orange/60",
-                                        activityLevel === 2 && "bg-brand-orange/80",
-                                        activityLevel === 3 && "bg-brand-orange"
-                                      )}
+                                      className={`streak-day streak-day-${activityLevel}`}
                                     />
                                   </TooltipTrigger>
                                   <TooltipContent>
@@ -229,7 +225,7 @@ const StreakCalendar = () => {
                             );
                           }
                           // Empty cell
-                          return <div key={`empty-${month.name}-${dayIndex}-${weekIndex}`} className="h-4 w-4 mx-0.5" />;
+                          return <div key={`empty-${month.name}-${dayIndex}-${weekIndex}`} className="streak-day-empty" />;
                         })}
                       </div>
                     ))}
@@ -241,14 +237,14 @@ const StreakCalendar = () => {
         </div>
 
         {/* Legend */}
-        <div className="flex justify-between items-center mt-4 text-xs text-muted-foreground">
+        <div className="streak-calendar-legend">
           <span>Learn how we count contributions</span>
-          <div className="flex items-center gap-1">
+          <div className="streak-calendar-legend-items">
             <span>Less</span>
-            <div className="h-3 w-3 rounded-sm bg-secondary/40"></div>
-            <div className="h-3 w-3 rounded-sm bg-brand-orange/60"></div>
-            <div className="h-3 w-3 rounded-sm bg-brand-orange/80"></div>
-            <div className="h-3 w-3 rounded-sm bg-brand-orange"></div>
+            <div className="streak-legend-box streak-legend-0"></div>
+            <div className="streak-legend-box streak-legend-1"></div>
+            <div className="streak-legend-box streak-legend-2"></div>
+            <div className="streak-legend-box streak-legend-3"></div>
             <span>More</span>
           </div>
         </div>
@@ -257,45 +253,45 @@ const StreakCalendar = () => {
   };
   
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex justify-between items-center">
+    <Card className="streak-calendar-card">
+      <CardHeader className="streak-calendar-header">
+        <CardTitle className="streak-calendar-title">
           <span>Your Posting Streak</span>
-          <div className="flex gap-4">
-            <div className="flex flex-col items-end">
-              <span className="text-xs text-muted-foreground">Current</span>
-              <span className="text-xl font-bold">{currentStreak} days</span>
+          <div className="streak-stats">
+            <div className="streak-stat">
+              <span className="streak-stat-label">Current</span>
+              <span className="streak-stat-value">{currentStreak} days</span>
             </div>
-            <div className="flex flex-col items-end">
-              <span className="text-xs text-muted-foreground">Longest</span>
-              <span className="text-xl font-bold">{longestStreak} days</span>
+            <div className="streak-stat">
+              <span className="streak-stat-label">Longest</span>
+              <span className="streak-stat-value">{longestStreak} days</span>
             </div>
           </div>
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
+        <div className="streak-calendar-controls">
+          <div className="streak-calendar-navigation">
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8"
+              className="streak-nav-button"
               onClick={goToPreviousMonth}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="streak-nav-icon" />
             </Button>
             
-            <span className="text-sm">
+            <span className="streak-date-range">
               {format(startDate, 'MMM yyyy')} - {format(endDate, 'MMM yyyy')}
             </span>
             
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8"
+              className="streak-nav-button"
               onClick={goToNextMonth}
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="streak-nav-icon" />
             </Button>
           </div>
         </div>

@@ -1,0 +1,194 @@
+
+/* Streak Calendar Main Container */
+.streak-calendar-card {
+  width: 100%;
+}
+
+.streak-calendar-header {
+  padding-bottom: 0.5rem;
+}
+
+.streak-calendar-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.streak-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.streak-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.streak-stat-label {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.streak-stat-value {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+/* Calendar Controls */
+.streak-calendar-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.streak-calendar-navigation {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.streak-nav-button {
+  height: 2rem;
+  width: 2rem;
+}
+
+.streak-nav-icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.streak-date-range {
+  font-size: 0.875rem;
+}
+
+/* Calendar Grid Container */
+.streak-calendar-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.streak-calendar-wrapper {
+  display: flex;
+  min-width: max-content;
+}
+
+/* Day Labels Column */
+.streak-calendar-labels {
+  padding-right: 0.5rem;
+}
+
+.streak-calendar-spacer {
+  height: 1.5rem;
+}
+
+.streak-calendar-weekday {
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.streak-calendar-weekday span {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* Calendar Content */
+.streak-calendar-content {
+  display: flex;
+  flex: 1;
+}
+
+.streak-calendar-month {
+  margin-right: 0.5rem;
+  min-width: calc(16.666% - 0.5rem);
+}
+
+.streak-calendar-month-header {
+  height: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.streak-calendar-month-header span {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.streak-calendar-row {
+  display: flex;
+  height: 1.5rem;
+  align-items: center;
+}
+
+/* Streak Day Squares */
+.streak-day {
+  height: 1rem;
+  width: 1rem;
+  border-radius: 0.125rem;
+  margin: 0 0.125rem;
+  transition: all 0.2s;
+}
+
+.streak-day-empty {
+  height: 1rem;
+  width: 1rem;
+  margin: 0 0.125rem;
+}
+
+.streak-day-0 {
+  background-color: hsl(var(--secondary) / 0.4);
+}
+
+.streak-day-1 {
+  background-color: hsl(25 95% 53% / 0.6);
+}
+
+.streak-day-2 {
+  background-color: hsl(25 95% 53% / 0.8);
+}
+
+.streak-day-3 {
+  background-color: hsl(25 95% 53%);
+}
+
+/* Legend */
+.streak-calendar-legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.streak-calendar-legend-items {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.streak-legend-box {
+  height: 0.75rem;
+  width: 0.75rem;
+  border-radius: 0.125rem;
+}
+
+.streak-legend-0 {
+  background-color: hsl(var(--secondary) / 0.4);
+}
+
+.streak-legend-1 {
+  background-color: hsl(25 95% 53% / 0.6);
+}
+
+.streak-legend-2 {
+  background-color: hsl(25 95% 53% / 0.8);
+}
+
+.streak-legend-3 {
+  background-color: hsl(25 95% 53%);
+}
